@@ -1,0 +1,29 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: beosbank-dbupdater-cronjob
+spec:
+  schedule: "* * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: db-updater
+              image: jbossdevguidebook/flyway:v1.0.4-rhdblog
+              volumeMounts:
+                - name: sql-configmap-volume
+                  mountPath: /var/flyway/data/
+              env:
+              - name: DB_USER
+                value: root
+              - name: DB_PASSWORD
+                value: Europa01#
+              - name: DB_URL
+                value: "jdbc:postgresql://beosbank-posgres-db-europa/beosbank-europa"
+          restartPolicy: Never
+
+          volumes:
+          - name: sql-configmap-volume
+            configMap:
+              name: sql-configmap
